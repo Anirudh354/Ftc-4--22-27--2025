@@ -1,9 +1,9 @@
 # 4/27/25
-# cannot play as colab won't run 
+# cannot play as colab won't run
 # Setup
-import os# oporting system 
+import os# oporting system
 os.environ["SDL_VIDEODRIVER"] = "dummy"#environ is a library with different variables that do different things.
-import pygame# Python game helps you make a python game
+import pygame# Python game helps you make a Python game
 import matplotlib.pyplot as plt# used to make the grid
 import numpy as np# helps with complex math problems
 import random# creates a random number from the system
@@ -16,25 +16,60 @@ ROWS, COLS = HEIGHT // CELL_SIZE, WIDTH // CELL_SIZE#user difernd varblie
 # Init pygame headless(does not requre a speical windows)
 pygame.init()
 screen = pygame.Surface((WIDTH, HEIGHT))
-
-# Particle color(using rgb color system)
-EMPTY, SAND, = 0, 1, 2, 3, 4
+#COLORS(rgb)
+EMPTY, SAND, WATER = 0, 1, 2
 COLORS = {
     EMPTY: (0, 0, 0),
-    SAND: (194, 178, 128),
+    SAND: (255, 232, 17),
+    WATER: (0,0,255)
 }
 
 # Create grid
 grid = [[EMPTY for _ in range(COLS)] for _ in range(ROWS)]#it will be x by x
-
+#4/29/2025
 # Initialize sandbox within bounds(testing)
 for i in range(30, 70):  # Sand & water
     grid[5][i] = SAND
     grid[6][i] = WATER
-    # Particle update rules
+    
+# Particle update rules
 def update_particles():
     for y in range(ROWS - 2, -1, -1):  # bottom to top
-        for x in range(COLS):
-            if grid[y][x] == SAND:
+        for x in range(COLS):#side to side
+            if grid[y][x] == SAND:#y means the y cordnate
                 if grid[y+1][x] == EMPTY:# adding one will make the sand and empty swich
                     grid[y][x], grid[y+1][x] = EMPTY, SAND
+#4/30/2025
+# Draw particles
+def draw_grid():
+    for y in range(ROWS):
+        for x in range(COLS):
+            color = COLORS[grid[y][x]]# Putting colors in each of the grid spaces
+            pygame.draw.rect(screen, color, (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))   # Draw a rectangle on the screen
+            
+def display_frame():# Display the current frame
+    arr = pygame.surfarray.array3d(screen) # Convert the screen surface into a 3D screen (width x height x RGB color)
+    arr = np.transpose(arr, (1, 0, 2))#It rearranges the 3D array's axes so that rows and columns are swapped, but depth stays the same
+    plt.imshow(arr)# Display the image using matplotlib
+    plt.axis('off')# Turn off axis lines and labels for a clean image
+    # Show the current frame
+    plt.show()
+
+# Run simulation
+for frame in range(30):#frames per second
+    update_particles()
+    draw_grid()
+    display_frame()
+def display_frame():# Display the current frame
+    arr = pygame.surfarray.array3d(screen) # Convert the screen surface into a 3D screen (width x height x RGB color)
+    arr = np.transpose(arr, (1, 0, 2))#It rearranges the 3D array's axes so that rows and columns are swapped, but depth stays the same
+    plt.imshow(arr)# Display the image using matplotlib
+    plt.axis('off')# Turn off axis lines and labels for a clean image
+    # Show the current frame
+    plt.show()
+
+# Run simulation
+for frame in range(30):#frames per second
+    update_particles()
+    draw_grid()
+    display_frame()
